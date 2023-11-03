@@ -1,0 +1,110 @@
+{
+  "name": "redis_cluster_resharding_delays",
+  "description": "Redis Cluster Resharding Delays occur when the process of redistributing data across Redis cluster nodes takes longer than expected. This can lead to slow resharding operations and may cause performance issues for applications that rely on the Redis database. In such instances, it is important to investigate the root cause of the delays and take necessary actions to restore normal performance.",
+  "params": [
+    {
+      "name": "REDIS_HOST",
+      "value": ""
+    },
+    {
+      "name": "PATH_TO_REDIS_CONFIG_FILE",
+      "value": ""
+    },
+    {
+      "name": "REDIS_PORT",
+      "value": ""
+    },
+    {
+      "name": "HOST_NAME",
+      "value": ""
+    },
+    {
+      "name": "K8S_CLUSTER_NAME",
+      "value": ""
+    },
+    {
+      "name": "NAMESPACE",
+      "value": ""
+    }
+  ],
+  "cells": [
+    {
+      "name": "cell_1",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Redis Cluster Resharding Delays.\nRedis Cluster Resharding Delays occur when the process of redistributing data across Redis cluster nodes takes longer than expected. This can lead to slow resharding operations and may cause performance issues for applications that rely on the Redis database. In such instances, it is important to investigate the root cause of the delays and take necessary actions to restore normal performance."
+    },
+    {
+      "name": "cell_2",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check Redis cluster status and get the node IDs"
+    },
+    {
+      "name": "cell_3",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `redis-cli -h ${REDIS_HOST} -p ${REDIS_PORT} cluster nodes`"
+    },
+    {
+      "name": "cell_4",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check CPU usage of Redis nodes"
+    },
+    {
+      "name": "cell_5",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `redis-cli -h ${REDIS_HOST} -p ${REDIS_PORT} info cpu`"
+    },
+    {
+      "name": "cell_6",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check memory usage of Redis nodes"
+    },
+    {
+      "name": "cell_7",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `redis-cli -h ${REDIS_HOST} -p ${REDIS_PORT} info memory`"
+    },
+    {
+      "name": "cell_8",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check network latency between Redis nodes"
+    },
+    {
+      "name": "cell_9",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `redis-cli --latency -h ${REDIS_HOST} -p ${REDIS_PORT}`"
+    },
+    {
+      "name": "cell_10",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check for slow Redis commands"
+    },
+    {
+      "name": "cell_11",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `redis-cli -h ${REDIS_HOST} -p ${REDIS_PORT} slowlog get`"
+    },
+    {
+      "name": "cell_12",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Optimize the resharding algorithm: Redis provides various resharding algorithms that can be used to optimize the resharding process. Choosing the right algorithm based on the cluster's specific needs may help to improve performance."
+    },
+    {
+      "name": "cell_13",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "host | host_name=$HOST_NAME | invoke_redis_resharding($PATH_TO_REDIS_CONFIG_FILE)"
+    }
+  ]
+}
